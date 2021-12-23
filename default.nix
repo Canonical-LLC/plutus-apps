@@ -33,7 +33,7 @@ rec {
 
   inherit (plutus-apps) web-ghc;
 
-  inherit (haskell.packages.plutus-pab.components.exes)
+  inherit (haskell.packages.plutus-pab-executables.components.exes)
     plutus-pab-examples
     plutus-uniswap;
 
