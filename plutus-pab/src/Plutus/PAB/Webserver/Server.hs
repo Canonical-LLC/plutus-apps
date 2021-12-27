@@ -45,7 +45,7 @@ import Plutus.PAB.Simulator (Simulation)
 import Plutus.PAB.Simulator qualified as Simulator
 import Plutus.PAB.Types (PABError, WebserverConfig (WebserverConfig, endpointTimeout, permissiveCorsPolicy, staticDir),
                          baseUrl, defaultWebServerConfig)
-import Plutus.PAB.Webserver.API (API, SwaggerAPI, WSAPI, WalletProxy)
+import Plutus.PAB.Webserver.API (API, SwaggerAPI, WSAPI)
 import Plutus.PAB.Webserver.Handler (apiHandler, swagger, walletProxy, walletProxyClientEnv)
 import Plutus.PAB.Webserver.WebSocket qualified as WS
 import Servant (Application, Handler (Handler), Raw, ServerT, err500, errBody, hoistServer, serve,
@@ -92,13 +92,8 @@ app fp walletClient pabRunner = do
                 Nothing -> do
                     Servant.serve (Proxy @(CombinedAPI t)) apiServer
                 Just wp -> do
-                    let wpServer =
-                            Servant.hoistServer
-                                (Proxy @(WalletProxy WalletId))
-                                (asHandler pabRunner)
-                                wp
-                        rest = Proxy @(CombinedAPI t :<|> WalletProxy WalletId)
-                    Servant.serve rest (apiServer :<|> wpServer)
+                    let rest = Proxy @(CombinedAPI t)
+                    Servant.serve rest apiServer
         Just filePath -> do
             let
                 fileServer :: ServerT Raw Handler
@@ -107,13 +102,8 @@ app fp walletClient pabRunner = do
                 Nothing -> do
                     Servant.serve (Proxy @(CombinedAPI t :<|> Raw)) (apiServer :<|> fileServer)
                 Just wp -> do
-                    let wpServer =
-                            Servant.hoistServer
-                                (Proxy @(WalletProxy WalletId))
-                                (asHandler pabRunner)
-                                wp
-                        rest = Proxy @(CombinedAPI t :<|> WalletProxy WalletId :<|> Raw)
-                    Servant.serve rest (apiServer :<|> wpServer :<|> fileServer)
+                    let rest = Proxy @(CombinedAPI t :<|> Raw)
+                    Servant.serve rest (apiServer :<|> fileServer)
 
 -- | Start the server using the config. Returns an action that shuts it down
 --   again, and an MVar that is filled when the webserver
