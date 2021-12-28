@@ -51,7 +51,7 @@ let
     };
     modules = [{
       # for compatibility with the GHC patch for extensible interfaces, not needed on mainline GHC.
-      packages.ghcide.patches = [ ../../patches/ghcide_partial_iface.patch ];
+      # packages.ghcide.patches = [ ../../patches/ghcide_partial_iface.patch ];
       # Workaround for https://github.com/haskell/haskell-language-server/issues/1160
       packages.haskell-language-server.patches = lib.mkIf stdenv.isDarwin [ ../../patches/haskell-language-server-dynamic.patch ];
       # See https://github.com/haskell/haskell-language-server/pull/1382#issuecomment-780472005
